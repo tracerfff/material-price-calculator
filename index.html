@@ -1,112 +1,255 @@
-import React, { useState } from "react";
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>耗材价格计算器</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
 
-export default function MaterialPriceCalculator() {
-  const [normalWeight, setNormalWeight] = useState("");
-  const [specialWeight, setSpecialWeight] = useState("");
-  const [result, setResult] = useState(null);
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #fff1f2, #fdf2f8, #f0f9ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
 
-  const normalPrice = 0.2;
-  const specialPrice = 0.3;
+    .phone-card {
+      width: 100%;
+      max-width: 390px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(10px);
+    }
 
-  const handleCalculate = () => {
-    const normal = parseFloat(normalWeight) || 0;
-    const special = parseFloat(specialWeight) || 0;
-    const total = normal * normalPrice + special * specialPrice;
+    .header {
+      background: linear-gradient(to right, #fbcfe8, #fef3c7, #bae6fd);
+      padding: 22px 20px;
+      text-align: center;
+    }
 
-    setResult({
-      normal,
-      special,
-      normalCost: normal * normalPrice,
-      specialCost: special * specialPrice,
-      total,
-    });
-  };
+    .header h1 {
+      font-size: 28px;
+      color: #334155;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
 
-  const handleReset = () => {
-    setNormalWeight("");
-    setSpecialWeight("");
-    setResult(null);
-  };
+    .header p {
+      font-size: 14px;
+      color: #475569;
+    }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-sky-50 flex items-center justify-center px-4 py-6">
-      <div className="w-full max-w-sm rounded-[28px] bg-white/85 backdrop-blur shadow-xl border border-white/70 overflow-hidden">
-        <div className="bg-gradient-to-r from-pink-200 via-amber-100 to-sky-200 px-5 py-5">
-          <h1 className="text-center text-2xl font-bold text-slate-700 tracking-wide">
-            耗材价格计算器
-          </h1>
-          <p className="text-center text-sm text-slate-600 mt-2">
-            普通耗材 ¥0.2/g ｜ 丝绸/渐变 ¥0.3/g
-          </p>
+    .content {
+      padding: 20px;
+    }
+
+    .input-card {
+      border-radius: 22px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+
+    .pink-card {
+      background: #fdf2f8;
+      border: 1px solid #fbcfe8;
+    }
+
+    .blue-card {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+    }
+
+    label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #f9a8d4;
+      box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.2);
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 18px;
+      padding: 14px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-reset {
+      background: #fef3c7;
+      color: #334155;
+    }
+
+    .btn-calc {
+      background: linear-gradient(to right, #f9a8d4, #93c5fd);
+      color: #1e293b;
+      box-shadow: 0 8px 20px rgba(249, 168, 212, 0.25);
+    }
+
+    .result-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(to bottom right, #ffffff, #fff1f2);
+      border: 1px solid #ffe4e6;
+      box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.8);
+      display: none;
+    }
+
+    .result-box h2 {
+      font-size: 20px;
+      color: #334155;
+      margin-bottom: 14px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    .result-row span:last-child {
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .row-pink {
+      background: #fdf2f8;
+    }
+
+    .row-blue {
+      background: #f0f9ff;
+    }
+
+    .row-total {
+      background: linear-gradient(to right, #fce7f3, #fef3c7);
+      padding: 16px;
+      margin-top: 6px;
+    }
+
+    .row-total .label {
+      font-size: 17px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .row-total .value {
+      font-size: 30px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-card">
+    <div class="header">
+      <h1>耗材价格计算器</h1>
+      <p>普通耗材 ¥0.2/g ｜ 丝绸/渐变 ¥0.3/g</p>
+    </div>
+
+    <div class="content">
+      <div class="input-card pink-card">
+        <label for="normalWeight">普通耗材（g）</label>
+        <input type="number" id="normalWeight" min="0" step="0.1" placeholder="请输入普通耗材克数" />
+      </div>
+
+      <div class="input-card blue-card">
+        <label for="specialWeight">丝绸 / 渐变（g）</label>
+        <input type="number" id="specialWeight" min="0" step="0.1" placeholder="请输入丝绸/渐变克数" />
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-reset" onclick="resetForm()">清空</button>
+        <button class="btn-calc" onclick="calculatePrice()">生成结果</button>
+      </div>
+
+      <div class="result-box" id="resultBox">
+        <h2>计算结果</h2>
+
+        <div class="result-row row-pink">
+          <span>普通耗材费用</span>
+          <span id="normalCost">¥0.00</span>
         </div>
 
-        <div className="p-5 space-y-4">
-          <div className="rounded-2xl bg-pink-50 border border-pink-100 p-4 shadow-sm">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              普通耗材（g）
-            </label>
-            <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              placeholder="请输入普通耗材克数"
-              value={normalWeight}
-              onChange={(e) => setNormalWeight(e.target.value)}
-              className="w-full rounded-xl border border-pink-200 bg-white px-4 py-3 text-base outline-none focus:ring-2 focus:ring-pink-200"
-            />
-          </div>
+        <div class="result-row row-blue">
+          <span>丝绸/渐变费用</span>
+          <span id="specialCost">¥0.00</span>
+        </div>
 
-          <div className="rounded-2xl bg-sky-50 border border-sky-100 p-4 shadow-sm">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              丝绸 / 渐变（g）
-            </label>
-            <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              placeholder="请输入丝绸/渐变克数"
-              value={specialWeight}
-              onChange={(e) => setSpecialWeight(e.target.value)}
-              className="w-full rounded-xl border border-sky-200 bg-white px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-200"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            <button
-              onClick={handleReset}
-              className="rounded-2xl py-3 text-base font-semibold bg-amber-100 text-slate-700 shadow-sm active:scale-[0.98] transition"
-            >
-              清空
-            </button>
-            <button
-              onClick={handleCalculate}
-              className="rounded-2xl py-3 text-base font-semibold bg-gradient-to-r from-pink-300 to-sky-300 text-slate-800 shadow-md active:scale-[0.98] transition"
-            >
-              生成结果
-            </button>
-          </div>
-
-          {result && (
-            <div className="mt-4 rounded-3xl bg-gradient-to-br from-white to-rose-50 border border-rose-100 p-5 shadow-inner">
-              <h2 className="text-lg font-bold text-slate-700 mb-4">计算结果</h2>
-              <div className="space-y-3 text-sm text-slate-600">
-                <div className="flex items-center justify-between rounded-xl bg-pink-50 px-4 py-3">
-                  <span>普通耗材费用</span>
-                  <span className="font-semibold text-slate-800">¥{result.normalCost.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-xl bg-sky-50 px-4 py-3">
-                  <span>丝绸/渐变费用</span>
-                  <span className="font-semibold text-slate-800">¥{result.specialCost.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-pink-100 to-amber-100 px-4 py-4 mt-2">
-                  <span className="text-base font-semibold text-slate-700">总价</span>
-                  <span className="text-2xl font-bold text-slate-800">¥{result.total.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          )}
+        <div class="result-row row-total">
+          <span class="label">总价</span>
+          <span class="value" id="totalCost">¥0.00</span>
         </div>
       </div>
     </div>
-  );
-}
+  </div>
+
+  <script>
+    function calculatePrice() {
+      const normalWeight = parseFloat(document.getElementById("normalWeight").value) || 0;
+      const specialWeight = parseFloat(document.getElementById("specialWeight").value) || 0;
+
+      const normalCost = normalWeight * 0.2;
+      const specialCost = specialWeight * 0.3;
+      const totalCost = normalCost + specialCost;
+
+      document.getElementById("normalCost").textContent = "¥" + normalCost.toFixed(2);
+      document.getElementById("specialCost").textContent = "¥" + specialCost.toFixed(2);
+      document.getElementById("totalCost").textContent = "¥" + totalCost.toFixed(2);
+
+      document.getElementById("resultBox").style.display = "block";
+    }
+
+    function resetForm() {
+      document.getElementById("normalWeight").value = "";
+      document.getElementById("specialWeight").value = "";
+      document.getElementById("resultBox").style.display = "none";
+    }
+  </script>
+</body>
+</html>
